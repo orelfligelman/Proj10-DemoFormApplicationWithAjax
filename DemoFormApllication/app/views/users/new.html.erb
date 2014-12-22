@@ -1,0 +1,58 @@
+<!-- Here we use simple jquery(AJAX) for comments under a particular post!-->
+
+<h3>Reviews For the Product - <i>Iphone</i></h3><br>
+<%= image_tag('mac.png', :size => "150x120") %><br>
+<h4>Price - 1000$ </h4><br>
+<h5>Reviews - </h5>
+<div class = "stat">
+  <!-- Load previous comments from database !-->
+  <% if !@users.blank? %>
+      <% for item in @users%>
+          <%= item.name %> --
+          <%= item.review %>
+          <br>
+      <%end%>
+  <%else%>
+  <%end%>
+  <div id="turn"></div>
+
+</div>
+<hr>
+<!-- for insert your new comment!-->
+Enter Reviews - <br><br>
+<%= form_for @user, remote: true do |f| %>
+Name: <%= f.text_field :name %>
+Review: <%= f.text_field :review %>
+<%= f.submit "Submit Review" %>
+<% end %>
+
+<!--Simple ajax. When user comment for the post, he/she can see the comment without reload the page!-->
+<script type="text/javascript">
+    $('#new_user').bind('ajax:success', function(evt, data, status, xhr){
+        //do some stuff on success
+
+        // Set the value to nil
+        $('#user_name').val('');
+        $('#user_review').val('');
+
+        var element;
+        var max=0;
+
+        /* Parse JSON data */
+        console.log(data);
+        $.each($.parseJSON(data), function(i,obj)
+        {
+            if(obj.id>max)
+            {
+                max=obj.id
+                element = obj
+            }
+        });
+
+        var div_data = element.name+" -- "+element.review+"<br>";
+
+        /* Put the data under the '#turn' div section  */
+        $("#turn").html( $("#turn").html() + div_data );
+
+    })
+</script>
